@@ -42,3 +42,66 @@
     padding-left: 0;
   }
 }
+
+.gh-activity {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.gh-activity-graph {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.gh-cell {
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  background: #ebedf0;
+}
+
+.gh-level-1 {
+  background: #9be9a8;
+}
+
+.gh-level-2 {
+  background: #40c463;
+}
+
+.gh-level-3 {
+  background: #30a14e;
+}
+
+.gh-level-4 {
+  background: #216e39;
+}
+
+.dark .gh-cell {
+  background: #30363d;
+}
+
+.dark .gh-level-1 {
+  background: #0e4429;
+}
+
+.dark .gh-level-2 {
+  background: #006d32;
+}
+
+.dark .gh-level-3 {
+  background: #26a641;
+}
+
+.dark .gh-level-4 {
+  background: #39d353;
+}
+
+@media screen and (max-width: 768px) {
+  .gh-activity {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}

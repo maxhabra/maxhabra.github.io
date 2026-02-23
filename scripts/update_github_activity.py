@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate a compact GitHub activity summary for the website header."""
+"""Generate GitHub contribution summary and compact graph data for the website."""
 
 from __future__ import annotations
 
@@ -7,126 +7,133 @@ import json
 import os
 import urllib.error
 import urllib.request
-from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 USERNAME = os.environ.get("GITHUB_USERNAME", "maxhabra")
 TOKEN = os.environ.get("GITHUB_TOKEN", "").strip()
 OUTPUT_PATH = Path("assets/data/github-activity.json")
+RECENT_DAY_COUNT = 84
 
-
-@dataclass
-class ActivitySummary:
-    generated_at: str
-    profile_url: str
-    activity_url: str
-    week_events: int
-    day_events: int
-    last_event_at: str | None
-    last_event_date: str | None
-    source: str
-    summary: str
-
-
-def fetch_events() -> tuple[list[dict[str, Any]], str]:
-    if TOKEN:
-        url = "https://api.github.com/user/events?per_page=100"
-        source = "authenticated"
-    else:
-        url = f"https://api.github.com/users/{USERNAME}/events/public?per_page=100"
-        source = "public"
-
-    headers = {
-        "Accept": "application/vnd.github+json",
-        "User-Agent": f"{USERNAME}-activity-updater",
+GRAPHQL_QUERY = """
+query($login: String!) {
+  user(login: $login) {
+    contributionsCollection {
+      contributionCalendar {
+        totalContributions
+        weeks {
+          contributionDays {
+            contributionCount
+            contributionLevel
+            date
+          }
+        }
+      }
     }
-    if TOKEN:
-        headers["Authorization"] = f"Bearer {TOKEN}"
-
-    request = urllib.request.Request(url, headers=headers)
-    with urllib.request.urlopen(request, timeout=20) as response:
-        payload = json.loads(response.read().decode("utf-8"))
-        if not isinstance(payload, list):
-            raise ValueError("Unexpected GitHub API response")
-    return payload, source
+  }
+}
+"""
 
 
-def parse_timestamp(value: str) -> datetime:
-    return datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+def fallback_payload(message: str) -> dict[str, Any]:
+    now = datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+    return {
+        "generated_at": now,
+        "profile_url": f"https://github.com/{USERNAME}",
+        "activity_url": f"https://github.com/{USERNAME}",
+        "yearly_contributions": 0,
+        "last_contribution_date": None,
+        "recent_days": [],
+        "source": "fallback",
+        "summary": message,
+    }
 
 
-def build_summary(events: list[dict[str, Any]], source: str) -> ActivitySummary:
-    now = datetime.now(timezone.utc)
-    week_cutoff = now - timedelta(days=7)
-    day_cutoff = now - timedelta(days=1)
+def graphql_request() -> dict[str, Any]:
+    if not TOKEN:
+        raise ValueError("Missing GITHUB_TOKEN secret")
 
-    week_events = 0
-    day_events = 0
-    last_event_at = None
-
-    for event in events:
-        created_at = event.get("created_at")
-        if not isinstance(created_at, str):
-            continue
-
-        ts = parse_timestamp(created_at)
-        if ts >= week_cutoff:
-            week_events += 1
-        if ts >= day_cutoff:
-            day_events += 1
-
-        if last_event_at is None:
-            last_event_at = created_at
-
-    last_event_date = None
-    if last_event_at:
-        last_event_date = last_event_at[:10]
-
-    if last_event_date:
-        summary = f"7d events: {week_events}. Last activity: {last_event_date}."
-    else:
-        summary = "No recent GitHub events found."
-
-    return ActivitySummary(
-        generated_at=now.replace(microsecond=0).isoformat().replace("+00:00", "Z"),
-        profile_url=f"https://github.com/{USERNAME}",
-        activity_url=f"https://github.com/{USERNAME}",
-        week_events=week_events,
-        day_events=day_events,
-        last_event_at=last_event_at,
-        last_event_date=last_event_date,
-        source=source,
-        summary=summary,
+    payload = json.dumps({"query": GRAPHQL_QUERY, "variables": {"login": USERNAME}}).encode("utf-8")
+    request = urllib.request.Request(
+        "https://api.github.com/graphql",
+        data=payload,
+        headers={
+            "Authorization": f"Bearer {TOKEN}",
+            "Content-Type": "application/json",
+            "Accept": "application/vnd.github+json",
+            "User-Agent": f"{USERNAME}-activity-updater",
+        },
+        method="POST",
     )
 
+    with urllib.request.urlopen(request, timeout=30) as response:
+        result = json.loads(response.read().decode("utf-8"))
 
-def write_output(summary: ActivitySummary) -> None:
+    if result.get("errors"):
+        raise ValueError(f"GraphQL error: {result['errors'][0].get('message', 'unknown')}" )
+
+    data = result.get("data", {})
+    user = data.get("user", {})
+    collection = user.get("contributionsCollection", {})
+    calendar = collection.get("contributionCalendar")
+    if not isinstance(calendar, dict):
+        raise ValueError("Missing contribution calendar data")
+    return calendar
+
+
+def build_payload(calendar: dict[str, Any]) -> dict[str, Any]:
+    total = int(calendar.get("totalContributions", 0))
+
+    days: list[dict[str, Any]] = []
+    for week in calendar.get("weeks", []):
+        for day in week.get("contributionDays", []):
+            days.append(
+                {
+                    "date": day.get("date"),
+                    "count": int(day.get("contributionCount", 0)),
+                    "level": day.get("contributionLevel", "NONE"),
+                }
+            )
+
+    recent_days = days[-RECENT_DAY_COUNT:]
+
+    last_contribution_date = None
+    for day in reversed(days):
+        if day.get("count", 0) > 0:
+            last_contribution_date = day.get("date")
+            break
+
+    now = datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+    summary = f"{total} contributions in the last year"
+    if last_contribution_date:
+        summary = f"{summary}. Last contribution: {last_contribution_date}."
+
+    return {
+        "generated_at": now,
+        "profile_url": f"https://github.com/{USERNAME}",
+        "activity_url": f"https://github.com/{USERNAME}",
+        "yearly_contributions": total,
+        "last_contribution_date": last_contribution_date,
+        "recent_days": recent_days,
+        "source": "graphql",
+        "summary": summary,
+    }
+
+
+def write_output(payload: dict[str, Any]) -> None:
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    OUTPUT_PATH.write_text(json.dumps(summary.__dict__, indent=2) + "\n", encoding="utf-8")
+    OUTPUT_PATH.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
 
 def main() -> int:
     try:
-        events, source = fetch_events()
-        summary = build_summary(events, source)
-    except (urllib.error.URLError, ValueError, TimeoutError) as exc:
-        fallback = ActivitySummary(
-            generated_at=datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
-            profile_url=f"https://github.com/{USERNAME}",
-            activity_url=f"https://github.com/{USERNAME}",
-            week_events=0,
-            day_events=0,
-            last_event_at=None,
-            last_event_date=None,
-            source="fallback",
-            summary=f"Failed to refresh activity: {exc}",
-        )
-        write_output(fallback)
-        return 0
+        calendar = graphql_request()
+        payload = build_payload(calendar)
+    except (urllib.error.URLError, TimeoutError, ValueError) as exc:
+        payload = fallback_payload(f"Failed to refresh contribution data: {exc}")
 
-    write_output(summary)
+    write_output(payload)
     return 0
 
 

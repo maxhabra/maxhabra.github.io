@@ -94,6 +94,7 @@ Use a classic Personal Access Token (PAT):
    - `read:user` (required)
    - `repo` (required if you want private repo activity included)
 3. Copy the token once and store it as `GH_ACTIVITY_TOKEN` secret in this repo.
+4. Optional for private counts: in your GitHub profile settings, enable `Include private contributions on my profile`.
 
 ### Schedule and timing
 
