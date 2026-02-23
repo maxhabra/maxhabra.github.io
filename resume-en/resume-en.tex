@@ -1,0 +1,182 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[letterpaper,margin=0.7in]{geometry}
+\usepackage[hidelinks]{hyperref}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{titlesec}
+
+% ATS-friendly text extraction
+\input{glyphtounicode}
+\pdfgentounicode=1
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\setlist[itemize]{leftmargin=1.2em,itemsep=1pt,topsep=1pt,parsep=0pt,partopsep=0pt}
+
+\definecolor{sectioncolor}{HTML}{2F2F2F}
+\titleformat{\section}{\large\bfseries\color{sectioncolor}}{}{0pt}{}[\titlerule]
+\titlespacing*{\section}{0pt}{18pt}{8pt}
+
+\newcommand{\needspace}[1]{%
+  \begingroup
+  \dimen0=#1\relax
+  \dimen2=\pagegoal
+  \advance\dimen2 by -\pagetotal
+  \ifdim\dimen2<\dimen0
+    \newpage
+  \fi
+  \endgroup
+}
+
+\newcommand{\resumesection}[1]{%
+  \needspace{8\baselineskip}%
+  \section*{#1}%
+}
+
+\newenvironment{experienceblock}{%
+  \needspace{12\baselineskip}%
+  \begin{samepage}%
+}{%
+  \end{samepage}%
+  \vspace{15pt}%
+}
+
+\newcommand{\resumeSubheading}[4]{%
+  \textbf{#1} \hfill #2\\
+  \textit{#3} \hfill \textit{#4}\\[-10pt]
+}
+
+\newcommand{\resumeProject}[3]{%
+  \needspace{4\baselineskip}%
+  \textbf{#1} \hfill #2\\
+  #3\\[5pt]
+}
+
+\begin{document}
+
+{\LARGE \textbf{Max Habra}}\\
+B.A.Sc., CISSP, CCSP, Security, Cloud \& DevOps Certified\\
+\href{tel:+15147919646}{+1 (514) 791-9646} $\vert$
+\href{mailto:max.habra@gmail.com}{max.habra@gmail.com} $\vert$
+\href{https://madmax.dev}{madmax.dev}
+
+\resumesection{Professional Summary}
+15+ years in IT and security (10+ in architecture), specializing in cloud security, cryptography, governance, automation, and DevSecOps in agile teams. Leader in cloud integration, incident response, and modernization initiatives. Delivered cloud, AI, and DevSecOps programs including zero trust, GitOps, NoOps, and SIEM/SOAR foundation capabilities.
+
+\resumesection{Core Skills}
+\textbf{Cloud:} AWS, Azure, GCP, O365, Entra ID, Serverless\\
+\textbf{Security:} Microsoft Defender, Microsoft Intune, Cryptography, HSMs, Defense-in-Depth\\
+\textbf{DevOps:} Agile, Containers, Kubernetes, GitHub, Azure DevOps, HashiCorp Stack, Atlassian Stack\\
+\textbf{SecOps:} Splunk, Microsoft Sentinel, SOAR, Incident Response, ServiceNow\\
+\textbf{Big Data \& AI:} Neural Networks, AutoML, Vision API, OCR/Tesseract, Jupyter, LLMs, AI Agents\\
+\textbf{Governance:} ISO 27000, NIST SP 800, PCI DSS, OWASP, FIPS 140-2, CIS, Zero Trust, STRIDE, TOGAF\\
+\textbf{Programming:} Bash, C\#, C++, PowerShell, Python, HCL
+
+\resumesection{Professional Experience}
+
+\begin{experienceblock}
+\resumeSubheading{CDPQ -- Global Investment Group}{2021--2025}{Lead, Cloud Architecture Integrator \& Incident Response, Security Operations Team}{}
+\begin{itemize}
+  \item Led cloud architecture initiatives for the Security Operations Team.
+  \item Improved security tools, pipelines, automation, and cloud practices across IT and business units.
+  \item Secured Azure, AWS, and GCP assets and tenants, aligned with zero trust objectives.
+  \item Implemented shift-left and GitOps in application security (50\% reduction of operational costs).
+  \item Improved incident response through automation, machine learning, and advanced analytics.
+  \item Drove application security automation with Azure DevOps and GitHub Actions.
+\end{itemize}
+\textbf{Selected outcomes:} Complete SIEM/SOAR foundation, security-as-code integration, SecOps automation with LLMs, resilient Azure/AWS infrastructure.
+\end{experienceblock}
+
+\begin{experienceblock}
+\resumeSubheading{Mouvement Desjardins Group}{2020}{Lead Cloud Integrator, Big Data \& Artificial Intelligence, Innovation \& AI Team}{}
+\begin{itemize}
+  \item Led technical and architecture cloud integration for Innovation \& AI.
+  \item Supported federated marketing analytics and Big Data initiatives.
+  \item Guided migration from IaaS applications to cloud-native SaaS/PaaS.
+  \item Implemented identity federation with Google Cloud and Azure Active Directory (Entra).
+  \item Expanded HashiCorp tooling (Terraform, Vault, Packer) for automation.
+\end{itemize}
+\textbf{Selected outcomes:} Cloud-native migrations, analytics automation, serverless data protection pipelines with DLP, Terraform and Git-based delivery automation.
+\end{experienceblock}
+
+\begin{experienceblock}
+\resumeSubheading{National Bank of Canada}{2019--2020}{Lead, Cloud Security \& Operations Engineer, Application Security Team}{}
+\begin{itemize}
+  \item Led cloud security engineering and DevOps practices using infrastructure as code and SSDLC.
+  \item Served as SME for Azure, AWS, GCP, private cloud, and container platforms.
+  \item Implemented security-as-code and a cloud-native banking security framework.
+  \item Led container security implementation (Kubernetes) and secure development practices.
+  \item Built cloud security enablement programs for developers, teams, and management.
+\end{itemize}
+\textbf{Selected outcomes:} Security foundation operations, defense-in-depth Kubernetes framework, CASB, anti-fraud use cases with ML/DL.
+\end{experienceblock}
+
+\begin{experienceblock}
+\resumeSubheading{Morgan Stanley}{2017--2019}{Senior Cloud Security Engineer, Cloud Practice, Security Architecture}{}
+\begin{itemize}
+  \item Security architecture team member for cloud practice initiatives.
+  \item Primary security architect/engineer for public and hybrid cloud projects (SaaS, PaaS, IaaS).
+  \item Specialized advisor across AWS, Azure, GCP, and Salesforce cloud projects.
+  \item Performed third-party security audits and remediation guidance.
+  \item Contributed to cloud, CASB, cryptography, hybrid integration, and DevSecOps whitepapers.
+\end{itemize}
+\textbf{Selected outcomes:} Public cloud security designs, IPO security audits, firmwide migration support for public/hybrid cloud.
+\end{experienceblock}
+
+\begin{experienceblock}
+\resumeSubheading{Desjardins Technology Group (GTD)}{2010--2017}{Network \& Security Architect}{}
+\begin{itemize}
+  \item Security architecture and engineering advisor across feasibility, design, and implementation phases.
+  \item Delivered consulting in systems, networking, cryptography, and governance.
+  \item Performed risk analysis, standards alignment (ISO, PCI DSS, NIST), and third-party assessments.
+  \item Supported IAM foundation capabilities (SSO, MFA, IAM, AD) and endpoint/server migrations.
+  \item Improved incident response processes and secured virtual banking services.
+\end{itemize}
+\textbf{Selected outcomes:} IAM audit program, virtual banking system security, business process automation.
+\end{experienceblock}
+
+\resumesection{Projects \& Talks}
+\resumeProject{Cloud Security Panel (NorthSec Application Security Conference)}{2021}{Panel interview and talk focused on secure cloud adoption, DevSecOps, and governance.}
+\resumeProject{Strava Advanced Analytics}{2021}{Built analytics pipeline with Google BigQuery and Python; replicated architecture in AWS using EventBridge, Lambda, S3, and Secrets Manager.}
+\resumeProject{Google Containerization Workforce}{2020}{Supported transformation of Google Forseti from IaaS security modules to a containerized, Terraform-deployed architecture.}
+\resumeProject{Cloud Security Principles in an Agile World}{2019}{Presented security-as-code patterns to support development and business teams.}
+\resumeProject{From Narrow Intelligence to Super Intelligence}{2018}{Talk on ANI, machine learning, deep learning, and path toward AGI/ASI.}
+
+\resumesection{Education}
+\needspace{4\baselineskip}\textbf{Massachusetts Institute of Technology (MIT)}\\
+Master classes in business management, artificial intelligence, and cryptography.
+
+\vspace{5pt}
+\needspace{4\baselineskip}\textbf{Université Laval}\\
+Bachelor of Applied Science (B.A.Sc.), cooperative initiative.\\
+Specialization in security and artificial intelligence.
+
+\vspace{5pt}
+\needspace{4\baselineskip}\textbf{Collège Édouard Montpetit}\\
+Technical degree (DEC) in network management and security.
+
+\resumesection{Certifications \& Training}
+\begin{itemize}
+  \item 2025 -- Microsoft Solutions Partner Program
+  \item 2022 -- Microsoft Certified: Cybersecurity Architect Expert (SC-100)
+  \item 2022 -- Microsoft Certified: Azure Security Engineer Associate (AZ-500)
+  \item 2021 -- HashiCorp Certified: Vault Associate
+  \item 2019 -- HashiCorp Certified: Terraform Associate
+  \item 2019 -- Google Certified: GCP Professional Cloud Security Engineer
+  \item 2017 -- ISC2 Certified Cloud Security Professional (CCSP)
+  \item 2016 -- ISC2 Certified Information Systems Security Professional (CISSP)
+\end{itemize}
+\textbf{Hands-on training:} Terraform and Vault labs, Google Cloud Architecture/Big Data/ML, Cloud and DevSecOps programs (GitHub Lab, Pluralsight), NorthSec applied security workshops.
+
+\resumesection{Publications \& Academic Work}
+\begin{itemize}
+  \item 2014 -- Time Sync Protocol Attacks, Université Laval
+  \item 2013 -- Statistics and Behavior for User Analysis, Université Laval
+  \item 2013 -- Knowledge-based AI for Chemical Composite Discovery, Université Laval
+\end{itemize}
+
+\end{document}
