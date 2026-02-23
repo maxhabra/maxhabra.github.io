@@ -2,7 +2,7 @@
 
 .gh-activity-line {
   margin: 6px 0 10px;
-  text-align: left;
+  text-align: right;
 }
 
 .gh-activity {
@@ -19,12 +19,12 @@
 }
 
 .header-right p {
-  text-align: left;
+  text-align: right;
 }
 
 @media screen and (max-width: 768px) {
   .gh-activity-line,
   .header-right p {
-    text-align: left;
+    text-align: right;
   }
 }
