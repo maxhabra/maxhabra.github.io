@@ -1,0 +1,42 @@
+name: Update GitHub Activity
+
+on:
+  schedule:
+    # Runs daily at 05:05 UTC (about midnight US Eastern during standard time).
+    - cron: "5 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh-activity:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Generate activity JSON
+        env:
+          GITHUB_USERNAME: maxhabra
+          GITHUB_TOKEN: ${{ secrets.GH_ACTIVITY_TOKEN }}
+        run: python scripts/update_github_activity.py
+
+      - name: Commit and push changes
+        run: |
+          if git diff --quiet -- assets/data/github-activity.json; then
+            echo "No activity changes to commit."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/data/github-activity.json
+          git commit -m "chore: daily github activity update"
+          git push

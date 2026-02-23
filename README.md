@@ -27,8 +27,13 @@ No build step is required.
 
 ```text
 .
+├── .github/
+│   └── workflows/
+│       └── update-github-activity.yml
 ├── index.html
 ├── assets/
+│   ├── data/
+│   │   └── github-activity.json
 │   ├── main.css
 │   ├── favicon.ico
 │   └── js/
@@ -36,6 +41,8 @@ No build step is required.
 ├── images/
 │   ├── profile.jpg
 │   └── favicon.ico
+├── scripts/
+│   └── update_github_activity.py
 └── README.md
 ```
 
@@ -63,6 +70,53 @@ If this repo is used as a GitHub Pages site, push to the configured deployment b
 - Keep styling changes in `assets/main.css`
 - Keep behavior changes in `assets/js/index.js`
 - Optimize images before committing to keep page load times low
+
+## Daily GitHub Activity Automation
+
+This site includes a header badge that reads from `assets/data/github-activity.json`.
+That JSON is refreshed daily by GitHub Actions.
+
+### One-time setup in GitHub
+
+1. Push this repository to GitHub.
+2. Open the repo in GitHub, then go to `Settings` -> `Actions` -> `General`.
+3. Under workflow permissions, select `Read and write permissions`.
+4. Click `Save`.
+5. Go to `Settings` -> `Secrets and variables` -> `Actions` -> `New repository secret`.
+6. Create a secret named `GH_ACTIVITY_TOKEN`.
+
+### Token creation
+
+Use a classic Personal Access Token (PAT):
+
+1. GitHub avatar -> `Settings` -> `Developer settings` -> `Personal access tokens` -> `Tokens (classic)`.
+2. Create a token with:
+   - `read:user` (required)
+   - `repo` (required if you want private repo activity included)
+3. Copy the token once and store it as `GH_ACTIVITY_TOKEN` secret in this repo.
+
+### Schedule and timing
+
+- Workflow file: `.github/workflows/update-github-activity.yml`
+- Current schedule: `5 5 * * *` (05:05 UTC daily)
+- This is approximately midnight US Eastern during standard time.
+- If you want another timezone target, change the cron expression.
+
+### Manual run
+
+You can trigger it manually from:
+
+- GitHub repo -> `Actions` -> `Update GitHub Activity` -> `Run workflow`
+
+### Local test
+
+From the repo root:
+
+```bash
+cd maxhabra.github.io
+python3 scripts/update_github_activity.py
+cat assets/data/github-activity.json
+```
 
 ## License
 
