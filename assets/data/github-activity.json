@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-02-23T00:00:00Z",
+  "generated_at": "2026-02-23T17:06:03Z",
   "profile_url": "https://github.com/maxhabra",
   "activity_url": "https://github.com/maxhabra",
   "week_events": 0,
   "day_events": 0,
   "last_event_at": null,
   "last_event_date": null,
-  "source": "seed",
-  "summary": "GitHub activity will appear after the first workflow run."
+  "source": "fallback",
+  "summary": "Failed to refresh activity: HTTP Error 404: Not Found"
 }
