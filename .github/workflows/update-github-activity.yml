@@ -3,7 +3,7 @@ name: Update GitHub Activity
 on:
   schedule:
     # Runs daily at 05:05 UTC (about midnight US Eastern during standard time).
-    - cron: "5 5 * * *"
+    - cron: "5 5 * * 1"
   workflow_dispatch:
 
 permissions:
